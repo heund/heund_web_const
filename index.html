@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hee-Eun Kim | Under Construction</title>
+  <style>
+    body {
+      margin: 0;
+      min-height: 100vh;
+      overflow-x: hidden;
+      cursor: default;
+      padding: 15px;
+      padding-bottom: 60px; /* Space for mobile banner */
+      position: relative;
+      -webkit-text-size-adjust: 100%;
+      -webkit-font-smoothing: antialiased;
+      box-sizing: border-box;
+    }
+    html {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+    }
+    .bg-text {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) rotate(-15deg);
+      font-size: 15vw;
+      font-weight: bold;
+      color: rgba(200, 200, 200, 0.2);
+      white-space: nowrap;
+      pointer-events: none;
+      z-index: -1;
+      user-select: none;
+      transition: transform 0.1s ease-out;
+      will-change: transform;
+      word-break: break-word;
+      white-space: normal;
+      text-align: center;
+      padding: 0 20px;
+      box-sizing: border-box;
+      width: 100%;
+    }
+    .content {
+      position: relative;
+      z-index: 1;
+      transition: opacity 0.3s ease;
+    }
+    .content.animations-disabled .falling-text {
+      pointer-events: none !important;
+    }
+    /* Mobile banner - always visible */
+    .mobile-banner {
+      display: block;
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      background: #000;
+      color: white;
+      text-align: center;
+      padding: 15px 0;
+      font-family: monospace;
+      font-size: 14px;
+      z-index: 1000;
+      box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
+    }
+    
+    /* Hide the interactive button on mobile */
+    .opt-out-btn {
+      display: none;
+    }
+    
+    @media (min-width: 768px) {
+      body {
+        padding-bottom: 15px; /* Reset padding for desktop */
+      }
+      /* Hide mobile banner on desktop */
+      .mobile-banner {
+        display: none;
+      }
+      
+      /* Show and style the interactive button for desktop */
+      .opt-out-btn {
+        position: fixed;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        top: 50%;
+        right: 0;
+        bottom: auto;
+        width: 120px;
+        height: 120px;
+        background: rgba(255, 255, 255, 0.9);
+        border: 4px solid #000;
+        border-right: none;
+        border-radius: 0;
+        padding: 15px;
+        cursor: pointer;
+        font-family: monospace;
+        font-weight: bold;
+        text-align: center;
+        z-index: 1000;
+        box-shadow: -2px 0 15px rgba(0,0,0,0.1);
+        transition: all 0.3s ease;
+        text-transform: uppercase;
+        transform: translateY(-50%);
+      }
+      
+      .opt-out-btn .close-icon {
+        font-size: 32px;
+        font-weight: bold;
+        margin-bottom: 10px;
+        display: block;
+        line-height: 1;
+      }
+      
+      .opt-out-btn:hover {
+        background: #000;
+        color: white;
+      }
+    }
+    .opt-out-btn:hover {
+      background: #000;
+      color: white;
+    }
+    .close-icon {
+      font-size: 24px;
+      font-weight: bold;
+      margin-bottom: 0;
+      transition: transform 0.3s ease;
+    }
+    .falling-text {
+      display: inline-block;
+      transition: all 0.5s ease-out;
+      transform-origin: top center;
+    }
+  </style>
+  <script>
+    function wrapTextNodes(element) {
+      const walker = document.createTreeWalker(
+        element,
+        NodeFilter.SHOW_TEXT,
+        null,
+        false
+      );
+      
+      const textNodes = [];
+      let node;
+      while (node = walker.nextNode()) {
+        if (node.nodeValue.trim() !== '') {
+          textNodes.push(node);
+        }
+      }
+      
+      textNodes.forEach(textNode => {
+        const wrapper = document.createElement('span');
+        wrapper.className = 'falling-text';
+        textNode.parentNode.insertBefore(wrapper, textNode);
+        wrapper.appendChild(textNode);
+      });
+    }
+    
+    let animationsEnabled = true;
+    
+    function toggleAnimations() {
+      animationsEnabled = !animationsEnabled;
+      const content = document.querySelector('.content');
+      const btn = document.querySelector('.opt-out-btn');
+      
+      if (animationsEnabled) {
+        content.classList.remove('animations-disabled');
+        btn.textContent = 'Opt Out of Disintegration';
+        btn.innerHTML = '<span class="close-icon">&times;</span> ' + btn.textContent;
+      } else {
+        content.classList.add('animations-disabled');
+        btn.textContent = 'Enable Disintegration';
+        btn.innerHTML = '<span class="close-icon">&#x21bb;</span> ' + btn.textContent;
+      }
+      
+      // Save preference
+      localStorage.setItem('animationsEnabled', animationsEnabled);
+    }
+    
+    function addHoverEffects() {
+      const elements = document.querySelectorAll('.falling-text');
+      
+      elements.forEach(el => {
+        // Skip if already processed
+        if (el.dataset.processed) return;
+        el.dataset.processed = 'true';
+        
+        el.addEventListener('mouseenter', (e) => {
+          if (!animationsEnabled) return;
+          // Random direction and rotation
+          const angle = (Math.random() * 60 - 30); // -30 to 30 degrees
+          const distance = 100 + Math.random() * 100; // 100-200px
+          const rotation = (Math.random() * 40 - 20); // -20 to 20 degrees
+          
+          e.target.style.transform = `translateY(${distance}px) rotate(${rotation}deg)`;
+          e.target.style.opacity = '0';
+          
+          // Reset after animation
+          setTimeout(() => {
+            e.target.style.transition = 'none';
+            e.target.style.transform = 'translateY(-100px) rotate(0deg)';
+            e.target.style.opacity = '0';
+            
+            // Force reflow
+            void e.target.offsetWidth;
+            
+            // Restore transition and reset position
+            e.target.style.transition = 'all 0.5s ease-out';
+            e.target.style.transform = '';
+            e.target.style.opacity = '';
+          }, 500);
+        });
+      });
+    }
+    // Easter egg for console
+    console.log(
+      `%c´´´´¶¶¶¶¶¶´´´´´´¶¶¶¶¶
+´´¶¶¶¶¶¶¶¶´´´¶¶¶¶¶¶¶¶¶
+´¶¶¶¶¶¶¶¶¶¶´¶¶¶¶´´´´¶¶¶¶
+¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶´´´´¶¶¶
+¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶´´¶¶¶¶
+¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶ ´¶¶¶¶´
+´´¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶
+´´´´´¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶
+´´´´´´´¶¶¶¶¶¶¶¶¶¶¶¶
+´´´´´´´´´¶¶¶¶¶¶¶¶
+´´´´´´´´´´´¶¶¶¶
+%cWhat if you can %cFEEL%c systems?`,
+      'font-family: monospace; font-size: 12px; line-height: 1; color: #ff6b6b;',
+      'font-weight: bold;',
+      'font-weight: bold; color: #ff0000;',
+      'font-weight: normal;'
+    );
+    console.log('%c- Hee-Eun Kim (Bekkie)', 'font-style: italic; color: #666;');
+
+    document.addEventListener('DOMContentLoaded', () => {
+      // Create and add the opt-out button (only for desktop)
+      let optOutBtn = null;
+      if (window.innerWidth >= 768) {
+        optOutBtn = document.createElement('div');
+        optOutBtn.className = 'opt-out-btn';
+        optOutBtn.innerHTML = '<span class="close-icon">&times;</span><span>Opt Out of Disintegration</span>';
+        document.body.appendChild(optOutBtn);
+      }
+      
+      // Load animation preference
+      if (localStorage.getItem('animationsEnabled') === 'false') {
+        animationsEnabled = false;
+        document.querySelector('.content').classList.add('animations-disabled');
+        if (optOutBtn) {
+          optOutBtn.innerHTML = '<span class="close-icon">↻</span><span>Enable Disintegration</span>';
+        }
+      }
+      
+      // Add click handler for the button if it exists
+      if (optOutBtn) {
+        optOutBtn.addEventListener('click', toggleAnimations);
+      }
+      
+      // Wrap all text nodes in the content div
+      const content = document.querySelector('.content');
+      wrapTextNodes(content);
+      addHoverEffects();
+      
+      const bgText = document.querySelector('.bg-text');
+      const sensitivity = 0.02; // Adjust this value to control the movement intensity
+      
+      // Handle both mouse and touch movement
+      const handleMove = (e) => {
+        let clientX, clientY;
+        
+        if (e.touches) {
+          // Handle touch events
+          clientX = e.touches[0].clientX;
+          clientY = e.touches[0].clientY;
+        } else {
+          // Handle mouse events
+          clientX = e.clientX;
+          clientY = e.clientY;
+        }
+        
+        // Get position as percentage (0-1)
+        const x = clientX / window.innerWidth - 0.5;
+        const y = (clientY / window.innerHeight - 0.5) * -1; // Invert Y axis
+        
+        // Calculate movement (smaller on mobile)
+        const moveAmount = window.innerWidth >= 768 ? 100 : 30;
+        const moveX = x * sensitivity * moveAmount;
+        const moveY = y * sensitivity * moveAmount;
+        
+        // Apply movement with smooth transition
+        bgText.style.transform = `translate(calc(-50% + ${moveX}px), calc(-50% + ${moveY}px)) rotate(-15deg)`;
+      };
+      
+      // Only add event listeners if not on mobile
+      if (window.innerWidth >= 768) {
+        document.addEventListener('mousemove', handleMove);
+      }
+      document.addEventListener('touchmove', handleMove, { passive: true });
+      
+      // Reset position when mouse/touch leaves
+      const resetPosition = () => {
+        bgText.style.transform = 'translate(-50%, -50%) rotate(-15deg)';
+      };
+      
+      document.addEventListener('mouseleave', resetPosition);
+      document.addEventListener('touchend', resetPosition, { passive: true });
+      
+      // Prevent zoom on double-tap
+      document.addEventListener('dblclick', (e) => {
+        e.preventDefault();
+      }, { passive: false });
+    });
+  </script>
+</head>
+<body>
+  <div class="bg-text">Under Construction</div>
+  <div class="mobile-banner">Website Under Construction</div>
+  <div class="content">
+  <h1>Hee-Eun Kim (Bekkie) | h.eund</h1>
+  <p><em>Artist-researcher exploring relational architectures between human cognition and AI through interactive systems</em></p>
+  <p>Experimental Artist | AI System Architect | Sound & Interaction Designer</p>
+  <hr>
+  
+  <h2>About</h2>
+  <p>
+    Hee-Eun Kim (Bekkie) is a South Korean artist-researcher whose practice explores how computational systems can be reimagined as sensorial experiences.
+    <br>
+    She creates works where technology becomes a relational field rather than a tool, investigating the spaces where data, emotion, and human perception intersect.
+  </p>
+  
+  <h2>Research</h2>
+  <p>
+    <a href="https://doi.org/10.5281/zenodo.15509042" target="_blank">BDSS Prototype Implementation: A Behavioural Approach to Sonifying Photosynthetic Systems</a> (2025)
+  </p>
+  
+  <h2>Works</h2>
+  
+  <h3>Grants & Fellowships</h3>
+  <ul>
+    <li>2024 - DNA Art Lab Residency, Pohang Culture Foundation, Pohang, South Korea</li>
+  </ul>
+  
+  <h3>Selected Exhibitions & Performances</h3>
+  <ul>
+    <li>2024 - Void && Form, Das LOT, Vienna, Austria (Team Mangshinsal)</li>
+    <li>2024 - Metal Rave, Dongbin 1969, Pohang, South Korea</li>
+    <li>2024 - Sonification of Soil Contamination Data, Songpa Library, Seoul, South Korea</li>
+    <li>2024 - Deviated Vibrations, Art & Tech Cluster Forum, Pohang, South Korea</li>
+    <li>2024 - Into the Rhythm (flute improvisation), Arko Art Centre & Gwangju Biennale, Gwangju, South Korea</li>
+  </ul>
+  
+  <h3>Selected Performances & Live Works</h3>
+  <ul>
+    <li>2024 - Deviated Vibrations, Art & Tech Cluster Forum, Pohang</li>
+    <li>2024 - Into the Rhythm (flute improvisation), Arko Art Centre & Gwangju Biennale</li>
+  </ul>
+  
+  <hr>
+  
+  <p>
+    hello[at]heund.net | 
+    <a href="https://www.instagram.com/h.eund/" target="_blank" rel="noopener">Instagram</a> | 
+    <a href="https://x.com/h_eund" target="_blank" rel="noopener">Twitter</a> |
+    <a href="https://www.youtube.com/@heund" target="_blank" rel="noopener">YouTube</a>
+  </p>
+  
+  <p><small>Inspired by the World Wide Web's first page, 1991.</small></p>
+  </div>
+</body>
+</html>
