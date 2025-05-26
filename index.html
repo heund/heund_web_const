@@ -93,35 +93,37 @@
         top: 50%;
         right: 0;
         bottom: auto;
-        width: 120px;
-        height: 120px;
-        background: rgba(255, 255, 255, 0.9);
-        border: 4px solid #000;
-        border-right: none;
-        border-radius: 0;
-        padding: 15px;
+        width: auto;
+        height: auto;
+        background: #f0f0f0;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        padding: 8px 16px;
+        margin: 0;
         cursor: pointer;
-        font-family: monospace;
-        font-weight: bold;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+        font-size: 14px;
+        font-weight: normal;
         text-align: center;
+        color: #333;
         z-index: 1000;
-        box-shadow: -2px 0 15px rgba(0,0,0,0.1);
-        transition: all 0.3s ease;
-        text-transform: uppercase;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        transition: background-color 0.2s ease, border-color 0.2s ease;
+        text-transform: none;
         transform: translateY(-50%);
       }
       
       .opt-out-btn .close-icon {
-        font-size: 32px;
-        font-weight: bold;
-        margin-bottom: 10px;
+        font-size: 16px;
+        font-weight: normal;
+        margin-bottom: 4px;
         display: block;
         line-height: 1;
       }
       
       .opt-out-btn:hover {
-        background: #000;
-        color: white;
+        background: #e0e0e0;
+        border-color: #999;
       }
     }
     .opt-out-btn:hover {
@@ -364,7 +366,7 @@
   </ul>
   
   
-  <h3>Experiments</h3>
+  <h2>Experiments</h2>
   <p>
     <b>Behaviour-Driven Systemic Sonification (BDSS)</b><br>
     Novel Sonification method that models systems as interdependent, emergent behaviours rather than isolated parameters.
